@@ -1,0 +1,24 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  install:
+    cmds:
+      - uv sync --dev
+
+  test:
+    cmds:
+      - uv run pytest
+
+  synth:
+    cmds:
+      - JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=true uv run cdk synth
+
+  deploy:
+    cmds:
+      - JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=true uv run cdk deploy --all
+
+  destroy:
+    cmds:
+      - JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=true uv run cdk destroy --all
