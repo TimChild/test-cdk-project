@@ -43,7 +43,7 @@ class MyFargateStack(Stack):
                 interval=Duration.seconds(30),
                 timeout=Duration.seconds(5),
                 retries=2,
-                start_period=Duration.seconds(0),
+                start_period=Duration.seconds(30),
             )
         )
 
