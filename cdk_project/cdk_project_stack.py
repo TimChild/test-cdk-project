@@ -37,8 +37,17 @@ class MyFargateStack(Stack):
             memory_limit_mib=512, # 512 MiB (lowest)
             public_load_balancer=True,
             min_healthy_percent=100,
+            # Set the container health check
+            health_check=ecs.HealthCheck(
+                command=["CMD-SHELL", "curl -f http://localhost:80/healthcheck || exit 1"],
+                interval=Duration.seconds(30),
+                timeout=Duration.seconds(5),
+                retries=2,
+                start_period=Duration.seconds(0),
+            )
         )
 
+        # Use a non-default health check path for the load balancer
         fargate_service.target_group.configure_health_check(
             path="/healthcheck",
             interval=Duration.seconds(30),
