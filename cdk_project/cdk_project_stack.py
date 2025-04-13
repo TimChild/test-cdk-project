@@ -11,10 +11,26 @@ class MyFargateStack(Stack):
         super().__init__(scope, id, **kwargs)
 
         # Create a VPC
-        vpc = ec2.Vpc(self, "MyVpc", max_azs=3)
+        vpc = ec2.Vpc(
+            self,
+            "MyVpc",
+            max_azs=3,
+            nat_gateways=1,
+            # subnet_configuration=[
+            #     ec2.SubnetConfiguration(
+            #         name="Public",
+            #         subnet_type=ec2.SubnetType.PUBLIC,
+            #         cidr_mask=24,
+            #     )
+            # ],
+        )
 
         # Create an ECS Cluster
-        cluster = ecs.Cluster(self, "MyCluster", vpc=vpc)
+        cluster = ecs.Cluster(
+            self,
+            "MyCluster",
+            vpc=vpc,
+        )
 
         # Build and push Docker image to ECR
         docker_image = ecr_assets.DockerImageAsset(
@@ -26,6 +42,7 @@ class MyFargateStack(Stack):
             self,
             "MyFargateService",
             cluster=cluster,
+            # assign_public_ip=True,
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_docker_image_asset(docker_image),
                 environment={
@@ -33,8 +50,8 @@ class MyFargateStack(Stack):
                 },
             ),
             desired_count=1,
-            cpu=256, # 1/4 vCPU (lowest)
-            memory_limit_mib=512, # 512 MiB (lowest)
+            cpu=256,  # 1/4 vCPU (lowest)
+            memory_limit_mib=512,  # 512 MiB (lowest)
             public_load_balancer=True,
             min_healthy_percent=100,
             # Set the container health check
@@ -44,7 +61,7 @@ class MyFargateStack(Stack):
                 timeout=Duration.seconds(5),
                 retries=2,
                 start_period=Duration.seconds(30),
-            )
+            ),
         )
 
         # Use a non-default health check path for the load balancer
@@ -56,6 +73,7 @@ class MyFargateStack(Stack):
             healthy_threshold_count=2,
             unhealthy_threshold_count=2,
         )
+
 
         # Add cost tracking tag
         Tags.of(self).add("AppManagerCFNStackKey", "MyFargateStack")
