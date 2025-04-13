@@ -13,7 +13,7 @@ tasks:
 
   synth:
     cmds:
-      - JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=true uv run cdk synth
+      - JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=true uv run cdk synth MyFargateStack
 
   deploy:
     cmds:
