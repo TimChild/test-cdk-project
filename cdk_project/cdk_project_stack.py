@@ -14,15 +14,16 @@ class MyFargateStack(Stack):
         vpc = ec2.Vpc(
             self,
             "MyVpc",
-            max_azs=3,
-            nat_gateways=1,
-            # subnet_configuration=[
-            #     ec2.SubnetConfiguration(
-            #         name="Public",
-            #         subnet_type=ec2.SubnetType.PUBLIC,
-            #         cidr_mask=24,
-            #     )
-            # ],
+            max_azs=2,
+            # nat_gateways=1,
+            nat_gateways=0,
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    name="Public",
+                    subnet_type=ec2.SubnetType.PUBLIC,
+                    cidr_mask=24,
+                )
+            ],
         )
 
         # Create an ECS Cluster
@@ -42,7 +43,7 @@ class MyFargateStack(Stack):
             self,
             "MyFargateService",
             cluster=cluster,
-            # assign_public_ip=True,
+            assign_public_ip=True,
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 image=ecs.ContainerImage.from_docker_image_asset(docker_image),
                 environment={
