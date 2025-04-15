@@ -2,8 +2,8 @@
 
 import aws_cdk as cdk
 
-from cdk_project.cdk_basic_lambda_stack import LambdaStack
-from cdk_project.cdk_project_stack import MyFargateStack
+from cdk_project.basic_lambda_stack import LambdaStack
+from cdk_project.fargate_stack import MyFargateStack
 
 app = cdk.App()
 
