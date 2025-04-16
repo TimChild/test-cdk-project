@@ -1,4 +1,5 @@
 from aws_cdk import Stack, Tags
+from aws_cdk import aws_apigateway as apigateway
 from aws_cdk import aws_ecr_assets as ecr_assets
 from aws_cdk import aws_lambda as lambda_
 from constructs import Construct
@@ -10,7 +11,11 @@ class MyFastAPIStack(Stack):
 
         # Build and push Docker image to ECR
         docker_image = ecr_assets.DockerImageAsset(
-            self, "MyDockerImage", directory="../minimal-fastapi-lambda"
+            self, "MyDockerImage", directory="../minimal-fastapi-lambda",
+            build_args={
+                "LAMBDA_TASK_ROOT": "/var/task",
+            }
+
         )
 
         lambda_fast_api = lambda_.DockerImageFunction(
@@ -25,7 +30,14 @@ class MyFastAPIStack(Stack):
             }
         )
 
-        _ = lambda_fast_api
+        # Create an API Gateway REST API
+        api = apigateway.LambdaRestApi(
+            self, "FastApiRestApi",
+            handler=lambda_fast_api,  # pyright: ignore[reportArgumentType]
+            proxy=True  # This enables all routes to be proxied to the Lambda
+        )
+
+        _ = api
 
         # Add cost tracking tag
         Tags.of(self).add("AppManagerCFNStackKey", "MyFastAPIStack")
