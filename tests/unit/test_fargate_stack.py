@@ -15,12 +15,8 @@ def test_sqs_queue_created():
         "LambdaStack",
         env=env,
     )
-    stack = MyFargateStack(app, 
-                           "cdk-project", 
-                           env=env,
-                           lambda_url=lambda_stack.api_url)
+    stack = MyFargateStack(app, "cdk-project", env=env, lambda_url=lambda_stack.api_url)
     template = assertions.Template.from_stack(stack)
-
 
     # template.has_resource_properties("AWS::", {
     #     "VisibilityTimeout": 300

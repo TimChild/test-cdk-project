@@ -1,4 +1,5 @@
 """Test app where even FastAPI runs in lambda."""
+
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 
@@ -16,12 +17,8 @@ def test_sqs_queue_created():
         "LambdaStack",
         env=env,
     )
-    stack = MyFastAPIStack(app, 
-                           "cdk-project", 
-                           env=env,
-                           lambda_url=lambda_stack.api_url)
+    stack = MyFastAPIStack(app, "cdk-project", env=env, lambda_url=lambda_stack.api_url)
     template = assertions.Template.from_stack(stack)
-
 
     # template.has_resource_properties("AWS::", {
     #     "VisibilityTimeout": 300

@@ -11,26 +11,30 @@ class MyFastAPIStack(Stack):
 
         # Build and push Docker image to ECR
         docker_image = ecr_assets.DockerImageAsset(
-            self, "MyDockerImage", directory="../minimal-fastapi-lambda",
+            self,
+            "MyDockerImage",
+            directory="../minimal-fastapi-lambda",
         )
 
         lambda_fast_api = lambda_.DockerImageFunction(
-            self, "FastApiLambda",
+            self,
+            "FastApiLambda",
             code=lambda_.DockerImageCode.from_ecr(
-                docker_image.repository, 
+                docker_image.repository,
                 # tag=docker_image.image_tag,
                 tag=docker_image.asset_hash,
             ),
             environment={
                 "API_GATEWAY_URL": lambda_url,
-            }
+            },
         )
 
         # Create an API Gateway REST API
         api = apigateway.LambdaRestApi(
-            self, "FastApiRestApi",
+            self,
+            "FastApiRestApi",
             handler=lambda_fast_api,  # pyright: ignore[reportArgumentType]
-            proxy=True  # This enables all routes to be proxied to the Lambda
+            proxy=True,  # This enables all routes to be proxied to the Lambda
         )
 
         _ = api

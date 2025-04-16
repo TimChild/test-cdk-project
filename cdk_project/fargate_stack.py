@@ -75,6 +75,5 @@ class MyFargateStack(Stack):
             unhealthy_threshold_count=2,
         )
 
-
         # Add cost tracking tag
         Tags.of(self).add("AppManagerCFNStackKey", "MyFargateStack")
