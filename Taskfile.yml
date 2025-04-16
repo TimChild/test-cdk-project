@@ -9,7 +9,7 @@ tasks:
 
   test:
     cmds:
-      - uv run pytest
+      - uv run pytest tests/unit
 
   synth:
     cmds:
