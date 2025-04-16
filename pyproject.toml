@@ -11,8 +11,14 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "aiohttp>=3.11.16",
+    "numpy>=2.2.4",
+    "pandas>=2.2.3",
     "pyright>=1.1.399",
     "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-pretty>=1.2.0",
+    "requests>=2.32.3",
     "ruff>=0.11.5",
 ]
 
@@ -34,3 +40,12 @@ line-length = 100
 extend-select = ["I", "RUF", "T20"]
 ignore = ["RUF012"]
 
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+        "T201",  # print found
+    ]
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"  # Automatically detects async test functions and fixtures and treats them as marked
+asyncio_default_fixture_loop_scope = "session"
