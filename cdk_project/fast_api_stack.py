@@ -12,10 +12,6 @@ class MyFastAPIStack(Stack):
         # Build and push Docker image to ECR
         docker_image = ecr_assets.DockerImageAsset(
             self, "MyDockerImage", directory="../minimal-fastapi-lambda",
-            build_args={
-                "LAMBDA_TASK_ROOT": "/var/task",
-            }
-
         )
 
         lambda_fast_api = lambda_.DockerImageFunction(

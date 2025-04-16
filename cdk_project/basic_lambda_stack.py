@@ -18,6 +18,17 @@ class LambdaStack(Stack):
             code=lambda_.Code.from_asset("lambdas"),
         )
 
+        # Direct url to lambda function
+        self.func_url = hello_lambda.add_function_url(
+            auth_type=lambda_.FunctionUrlAuthType.NONE,
+            cors=lambda_.FunctionUrlCorsOptions(
+                allowed_origins=["*"],
+                allowed_methods=[lambda_.HttpMethod.GET],
+                allowed_headers=["*"],
+            ),
+        )
+
+        # Create an API Gateway REST API for lambda
         api = apigateway.LambdaRestApi(
             self,
             "HelloApi",
