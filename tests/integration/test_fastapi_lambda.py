@@ -9,6 +9,7 @@ import requests
 
 URL = "https://010kzrsh75.execute-api.us-west-2.amazonaws.com/prod/"
 HEALTHCHECK = URL + "healthcheck"
+ONE_SECOND = URL + "one-second"
 
 
 def test_single_request_healthcheck():
@@ -49,17 +50,21 @@ async def timed_response(session: aiohttp.ClientSession, url: str) -> ResponseIn
 async def retry_timed_response(session: aiohttp.ClientSession, url: str) -> ResponseInfo:
     """Get the response time with retry strategy for a single request."""
     backoff_times = [0.1, 1, 5, None]  # Backoff times in seconds
+    jitter_factor = 0.1  # Jitter factor for randomization
     response_info = ResponseInfo(status_code=0, response_time=0)
     retries = 0
+    total_time = 0
     for backoff in backoff_times:
         response_info = await timed_response(session, url)
         response_info.retry_count = retries
         retries += 1
+        response_info.response_time += total_time
+        total_time += response_info.response_time
         if response_info.status_code == 200:
             return response_info
         if backoff is None:
             break
-        await asyncio.sleep(backoff)
+        await asyncio.sleep(backoff * (1 + jitter_factor * np.random.uniform(-1, 1)))
     return response_info
 
 
@@ -69,9 +74,9 @@ async def run_requests(num_requests: int, retry: bool = False):
         tasks = []
         for _ in range(num_requests):
             if retry:
-                tasks.append(retry_timed_response(session, HEALTHCHECK))
+                tasks.append(retry_timed_response(session, ONE_SECOND))
             else:
-                tasks.append(timed_response(session, HEALTHCHECK))
+                tasks.append(timed_response(session, ONE_SECOND))
         responses: list[ResponseInfo] = await asyncio.gather(*tasks)
     return responses
 
@@ -130,7 +135,7 @@ async def test_time_100_healthchecks():
     print("\n\nStarting async requests without retry...")
     responses = await run_requests(100, retry=False)
     df = analyze_responses(responses)
-    save_df(df, "response_data_no_retry.csv")
+    save_df(df, f"response_data_no_retry-{time.monotonic_ns()}.csv")
 
 
 # Test with retry
@@ -139,4 +144,4 @@ async def test_time_100_healthchecks_with_retry():
     print("\n\nStarting async requests with retry...")
     responses = await run_requests(100, retry=True)
     df = analyze_responses(responses)
-    save_df(df, "response_data_with_retry.csv")
+    save_df(df, f"response_data_with_retry-{time.monotonic_ns()}.csv")

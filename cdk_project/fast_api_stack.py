@@ -39,5 +39,37 @@ class MyFastAPIStack(Stack):
 
         _ = api
 
+        # # Create a Step Function to invoke the Lambda function
+        # invoke_lambda = LambdaInvoke(
+        #     self,
+        #     "InvokeLambda",
+        #     lambda_function=lambda_fast_api, # pyright: ignore[reportArgumentType]
+        # )
+        # # Add retry logic to the Step Function
+        # invoke_lambda.add_retry(
+        #     max_attempts=3,
+        #     max_delay=Duration.seconds(20),
+        # )
+        # # pass_state = Pass(self, "PassState")
+        # # invoke_lambda.next(pass_state)
+        #
+        #
+        # # Create a Step Function State Machine
+        # state_machine = StateMachine(
+        #     self,
+        #     "MyStateMachine",
+        #     definition=invoke_lambda,
+        #     timeout=Duration.seconds(60),
+        # )
+        #
+        # # Add a gateway to the Step Function
+        # api = apigateway.StepFunctionsRestApi(
+        #     self,
+        #     "StepFunctionApi",
+        #     state_machine=state_machine,
+        #     description="API Gateway for Step Function",
+        # )
+
+
         # Add cost tracking tag
         Tags.of(self).add("AppManagerCFNStackKey", "MyFastAPIStack")
